@@ -54,6 +54,10 @@ if "name" not in st.session_state:
     st.session_state["name"] = ""
 if "last_loaded_user" not in st.session_state:
     st.session_state["last_loaded_user"] = None
+if "chat_input" not in st.session_state:  
+    st.session_state.chat_input = ""
+if "reset_input" not in st.session_state:
+    st.session_state.reset_input = False
 
 username = st.session_state.get("user", None)
 
@@ -73,6 +77,7 @@ if username:
     if st.button("🗑️ Clear My Chat History"):
         clear_user_chat_history(username)
         st.session_state.messages = []
+        st.session_state.chat_input = ""
         st.rerun()
 
 st.markdown("</div>", unsafe_allow_html=True)
@@ -104,12 +109,21 @@ for msg in st.session_state.messages:
         """, unsafe_allow_html=True)
 st.markdown("</div>", unsafe_allow_html=True)
 
+# --- Reset chat input before rendering widget ---
+if st.session_state.get("reset_input", False):
+    st.session_state["chat_input"] = ""
+    st.session_state["reset_input"] = False
+
 # --- Input Form ---
 with st.form(key="chat_form"):
     st.markdown('<div class="input-form">', unsafe_allow_html=True)
     col1, col2, col3 = st.columns([7, 1, 1])
     with col1:
-        user_input = st.text_input("Type your message...", key="user_input", label_visibility="collapsed")
+        user_input = st.text_input(
+            "Type your message...",
+            key="chat_input",
+            label_visibility="collapsed"
+        )
     with col2:
         send = st.form_submit_button("Send")
     with col3:
@@ -117,9 +131,8 @@ with st.form(key="chat_form"):
     st.markdown('</div>', unsafe_allow_html=True)
 
 # --- Handle Send ---
-if send and st.session_state["user_input"].strip():
-    message = st.session_state["user_input"].strip()
-
+if send and st.session_state.chat_input.strip():
+    message = st.session_state.chat_input.strip()
     st.session_state.messages.append({"role": "user", "content": message})
     with st.spinner("Janasaarthi is thinking..."):
         reply = chat_with_ai(message, st.session_state.language_selector)
@@ -129,14 +142,15 @@ if send and st.session_state["user_input"].strip():
     if username:
         save_chat_message(username, "user", message)
         save_chat_message(username, "assistant", reply)
-        save_chat(message, reply, st.session_state.language_selector, username)  # ✅ now passing username
+        save_chat(message, reply, st.session_state.language_selector, username)
 
-    del st.session_state["user_input"]
+    st.session_state.reset_input = True
     st.rerun()
 
-# --- Handle Clear View Only ---
+# --- Handle Clear ---
 if clear:
     st.session_state.messages = []
+    st.session_state.reset_input = True
     st.rerun()
 
 # --- Show only logged-in user's multilingual chat logs ---

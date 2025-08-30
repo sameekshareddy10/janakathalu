@@ -3,39 +3,49 @@ import json
 from datetime import datetime
 
 # --- File Paths ---
-CHAT_LOG_FILE = "data/chat_logs.json"            # for user messages
-LANG_LOG_FILE = "data/chat_logs_lang.json"       # for multilingual logs
+CHAT_LOG_FILE = "data/chat_logs.json"          # per-message user chat
+LANG_LOG_FILE = "data/chat_logs_lang.json"     # multilingual chat logs
+STORY_LOG_FILE = "data/story_submissions.json" # story submissions
 
-STORY_LOG_FILE = "data/story_submissions.json"
-
-# ---------- Ensure file/folder exists ----------
-def ensure_data_file(filename):
-    os.makedirs(os.path.dirname(filename), exist_ok=True)
-    if not os.path.exists(filename):
-        with open(filename, "w", encoding="utf-8") as f:
+# ---------- Helpers ----------
+def _ensure_data_file(file_path):
+    """Ensure the JSON file exists and is initialized as a list."""
+    os.makedirs(os.path.dirname(file_path), exist_ok=True)
+    if not os.path.exists(file_path):
+        with open(file_path, "w", encoding="utf-8") as f:
             json.dump([], f)
 
-# ---------- Load JSON ----------
-def load_data(filename):
-    ensure_data_file(filename)
-    with open(filename, "r", encoding="utf-8") as f:
-        try:
+def _load_json(file_path):
+    """Safely load JSON data from file."""
+    _ensure_data_file(file_path)
+    try:
+        with open(file_path, "r", encoding="utf-8") as f:
             return json.load(f)
-        except json.JSONDecodeError:
-            return []
+    except json.JSONDecodeError:
+        return []
 
-# ---------- Save generic data ----------
-def save_submission(entry, filename):
-    ensure_data_file(filename)
-    data = load_data(filename)
-    data.append(entry)
-    with open(filename, "w", encoding="utf-8") as f:
+def _save_json(file_path, data):
+    """Save JSON data to file."""
+    os.makedirs(os.path.dirname(file_path), exist_ok=True)
+    with open(file_path, "w", encoding="utf-8") as f:
         json.dump(data, f, indent=4, ensure_ascii=False)
 
-# ========== CHAT ==========
+# ---------- Generic ----------
+def load_data(file_path):
+    """Load JSON from any file."""
+    return _load_json(file_path)
 
-# Save chat entry (multilingual/global)
+def save_submission(submission, file_path):
+    """Save a generic entry (e.g. story or chat)."""
+    data = _load_json(file_path)
+    if "timestamp" not in submission:
+        submission["timestamp"] = datetime.now().isoformat()
+    data.append(submission)
+    _save_json(file_path, data)
+
+# ========== CHAT ==========
 def save_chat(user_input, assistant_reply, language, username=None):
+    """Save multilingual/global chat log."""
     entry = {
         "timestamp": datetime.now().isoformat(),
         "language": language,
@@ -44,49 +54,52 @@ def save_chat(user_input, assistant_reply, language, username=None):
     }
     if username:
         entry["username"] = username
-    save_submission(entry, LANG_LOG_FILE)  # if you've renamed it; otherwise use CHAT_LOG_FILE
+    save_submission(entry, LANG_LOG_FILE)
 
-# Save per-message chat (user-specific)
 def save_chat_message(username, role, message):
-    """Save a user-specific chat message."""
+    """Save a user-specific chat message (per message)."""
     if not username:
-        return  # Don't save guest messages
+        return
     entry = {
         "username": username,
         "role": role,
-        "message": message
+        "message": message,
+        "timestamp": datetime.now().isoformat()
     }
-    logs = load_data(CHAT_LOG_FILE)
+    logs = _load_json(CHAT_LOG_FILE)
     logs.append(entry)
-    with open(CHAT_LOG_FILE, "w", encoding="utf-8") as f:
-        json.dump(logs, f, indent=2)
+    _save_json(CHAT_LOG_FILE, logs)
 
-
-# Load only messages from a given user
 def load_user_chat_history(username):
-    logs = load_data(CHAT_LOG_FILE)
-    return [msg for msg in logs if msg.get("username") == username and "role" in msg and "message" in msg]
+    """Load chat history only for one user."""
+    logs = _load_json(CHAT_LOG_FILE)
+    return [msg for msg in logs if msg.get("username") == username]
 
-# Clear specific user's chat
 def clear_user_chat_history(username):
-    logs = load_data(CHAT_LOG_FILE)
-    filtered = [msg for msg in logs if msg.get("username") != username]
-    with open(CHAT_LOG_FILE, "w", encoding="utf-8") as f:
-        json.dump(filtered, f, indent=2)
+    """Clear a user's chat history from both normal and multilingual logs."""
+    # Per-message logs
+    logs = _load_json(CHAT_LOG_FILE)
+    logs = [msg for msg in logs if msg.get("username") != username]
+    _save_json(CHAT_LOG_FILE, logs)
+
+    # Multilingual logs
+    lang_logs = _load_json(LANG_LOG_FILE)
+    lang_logs = [log for log in lang_logs if log.get("username") != username]
+    _save_json(LANG_LOG_FILE, lang_logs)
 
 # ========== STORY ==========
-
 def rate_story(story_id, rating):
-    stories = load_data(STORY_LOG_FILE)
+    """Add a rating to a story."""
+    stories = _load_json(STORY_LOG_FILE)
     for story in stories:
         if story.get("id") == story_id:
             story.setdefault("ratings", []).append(rating)
             break
-    with open(STORY_LOG_FILE, "w", encoding="utf-8") as f:
-        json.dump(stories, f, indent=4)
+    _save_json(STORY_LOG_FILE, stories)
 
 def comment_on_story(story_id, text):
-    stories = load_data(STORY_LOG_FILE)
+    """Add a comment to a story."""
+    stories = _load_json(STORY_LOG_FILE)
     for story in stories:
         if story.get("id") == story_id:
             story.setdefault("comments", []).append({
@@ -94,14 +107,13 @@ def comment_on_story(story_id, text):
                 "timestamp": datetime.now().strftime("%Y-%m-%d %H:%M")
             })
             break
-    with open(STORY_LOG_FILE, "w", encoding="utf-8") as f:
-        json.dump(stories, f, indent=4)
+    _save_json(STORY_LOG_FILE, stories)
 
 def update_story(story_id, updated_data):
-    stories = load_data(STORY_LOG_FILE)
+    """Update a story with new data."""
+    stories = _load_json(STORY_LOG_FILE)
     for i, story in enumerate(stories):
         if story.get("id") == story_id:
             stories[i].update(updated_data)
             break
-    with open(STORY_LOG_FILE, "w", encoding="utf-8") as f:
-        json.dump(stories, f, indent=4)
+    _save_json(STORY_LOG_FILE, stories)

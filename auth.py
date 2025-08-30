@@ -1,53 +1,47 @@
-import json
-import os
-import hashlib
+import requests
+import streamlit as st
 
-USER_DATA_FILE = "data/users.json"
+API_BASE = "https://api.corpus.swecha.org/api/v1"
 
-# ---------- Ensure the file exists ----------
-def ensure_user_file():
-    os.makedirs(os.path.dirname(USER_DATA_FILE), exist_ok=True)
-    if not os.path.exists(USER_DATA_FILE):
-        with open(USER_DATA_FILE, "w", encoding="utf-8") as f:
-            json.dump({}, f)
+def login(phone: str, password: str):
+    """Login and store token in session_state"""
+    url = f"{API_BASE}/auth/login"
+    payload = {"phone": phone, "password": password}
+    headers = {"Content-Type": "application/json"}
 
-# ---------- Load users ----------
-def load_users():
-    ensure_user_file()
-    with open(USER_DATA_FILE, "r", encoding="utf-8") as f:
-        try:
-            return json.load(f)
-        except json.JSONDecodeError:
-            return {}
+    try:
+        response = requests.post(url, json=payload, headers=headers)
 
-# ---------- Save users ----------
-def save_users(users):
-    ensure_user_file()
-    with open(USER_DATA_FILE, "w", encoding="utf-8") as f:
-        json.dump(users, f, indent=4)
+        if response.status_code == 200:
+            data = response.json()
+            st.session_state["access_token"] = data["access_token"]  # Store token in session
+            st.session_state["token_type"] = data["token_type"]  # Store token type if needed
+            return True, "Login successful ✅"
+        elif response.status_code == 422:
+            return False, "Validation error ❌ (Check phone/password format)"
+        else:
+            return False, f"Login failed ❌ ({response.status_code}) - {response.text}"
+    except Exception as e:
+        return False, f"Error: {str(e)}"
 
-# ---------- Hash password ----------
-def hash_password(password):
-    return hashlib.sha256(password.encode()).hexdigest()
+def get_current_user():
+    """Fetch user details using stored token"""
+    if "access_token" not in st.session_state:
+        return None
 
-# ---------- Register user ----------
-def register_user(username, name, password):
-    users = load_users()
-    if username in users:
-        return False, "Username already exists."
-    users[username] = {
-        "name": name,
-        "password": hash_password(password)
+    url = f"{API_BASE}/auth/me"
+    headers = {
+        "Authorization": f"Bearer {st.session_state['access_token']}"
     }
-    save_users(users)
-    return True, "Registration successful!"
 
-# ---------- Login user ----------
-def login_user(username, password):
-    users = load_users()
-    if username not in users:
-        return False, "User not found.", None
-    hashed = hash_password(password)
-    if users[username]["password"] != hashed:
-        return False, "Incorrect password.", None
-    return True, "Login successful!", users[username]["name"]
+    response = requests.get(url, headers=headers)
+    if response.status_code == 200:
+        return response.json()
+    return None
+
+def logout():
+    """Clear session"""
+    st.session_state.pop("access_token", None)
+    st.session_state.pop("token_type", None)
+    st.session_state.pop("user", None)
+    st.session_state.pop("name", None)

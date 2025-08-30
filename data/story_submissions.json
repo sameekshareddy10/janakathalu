@@ -103,5 +103,27 @@
         "story": "**The Forgotten Letter**  \n\nEthan found the yellowed envelope tucked inside an old book at the library. Curious, he opened it and discovered a love letter from 1945, written by a soldier to his sweetheart. The words were so tender, Ethan felt compelled to find the intended recipient.  \n\nDays later, he tracked down Clara, now 97, in a nearby nursing home. With trembling hands, she read the letter—her lost love’s final words before he died in the war. Tears filled her eyes as she whispered, *\"I never knew he wrote this.\"*  \n\nTouched, Ethan squeezed her hand. Some love stories never fade.",
         "username": "sameeksha",
         "timestamp": "2025-08-04T18:57:16.216745"
+    },
+    {
+        "prompt": "Lion king",
+        "genres": "Adventure, Animal Stories",
+        "language": "English",
+        "word_limit": "500",
+        "story": "**The Lion King’s Return**  \n\nDeep in the heart of the golden savanna, under the blazing African sun, a young lion named Kito stood atop Pride Rock, his golden mane just beginning to thicken. The land stretched before him—vast, wild, and full of mystery. But Kito carried a heavy burden.  \n\nYears ago, his father, King Jabari, had been betrayed by his treacherous brother, Makalo, who had driven Kito away as a cub. Now, grown strong and wise, Kito had returned to reclaim his birthright.  \n\nWith him stood his loyal friends—Binti the clever meerkat, Rafiki the wise old baboon, and Tando the brave warthog. They had journeyed far, facing scorching deserts and raging rivers, all to bring Kito home.  \n\n“The pride will never accept you unless you prove yourself,” Rafiki said, tapping his staff thoughtfully.  \n\nKito knew what he had to do. Makalo had ruled with fear, letting the land wither under his greed. The herds had thinned, and the rivers ran low. The animals whispered of a curse.  \n\nThat night, under a sky filled with stars, Kito crept into the heart of Makalo’s territory. He spotted his uncle lounging on a rock, his dark mane unkempt, his eyes cruel. Around him, the lionesses looked weary, their ribs showing beneath their fur.  \n\nKito stepped forward, his voice strong. “Makalo! I have returned.”  \n\nThe pride gasped. Makalo snarled, leaping down. “You? A weakling who ran away?”  \n\n“I ran to survive,” Kito growled. “But now I fight for my home.”  \n\nA battle erupted—claws flashed, roars shook the earth. Kito fought bravely, but Makalo was larger, fiercer. Just as Makalo lunged for the final blow, Tando and Binti distracted him, allowing Kito to knock his uncle off balance. With a mighty push, Makalo tumbled down the rocks, defeated.  \n\nThe pride bowed before Kito, their true king. As he stood on Pride Rock at dawn, the land seemed to breathe again. Rain fell, quenching the thirsty earth, and the herds returned.  \n\nKito had not just won a throne—he had restored the Circle of Life. And as his roar echoed across the savanna, the animals knew… the true Lion King had returned.  \n\n**The End.**",
+        "username": null,
+        "timestamp": "2025-08-09T22:26:21.220396"
+    },
+    {
+        "title": "The Lion King’s Return",
+        "genres": [
+            "Adventure",
+            "Drama"
+        ],
+        "language": "English",
+        "content_type": "text",
+        "content": "Deep in the heart of the golden savanna, under the blazing African sun, a young lion named Kito stood atop Pride Rock, his golden mane just beginning to thicken. The land stretched before him—vast, wild, and full of mystery. But Kito carried a heavy burden.\n\nYears ago, his father, King Jabari, had been betrayed by his treacherous brother, Makalo, who had driven Kito away as a cub. Now, grown strong and wise, Kito had returned to reclaim his birthright.\n\nWith him stood his loyal friends—Binti the clever meerkat, Rafiki the wise old baboon, and Tando the brave warthog. They had journeyed far, facing scorching deserts and raging rivers, all to bring Kito home.\n\n“The pride will never accept you unless you prove yourself,” Rafiki said, tapping his staff thoughtfully.\n\nKito knew what he had to do. Makalo had ruled with fear, letting the land wither under his greed. The herds had thinned, and the rivers ran low. The animals whispered of a curse.\n\nThat night, under a sky filled with stars, Kito crept into the heart of Makalo’s territory. He spotted his uncle lounging on a rock, his dark mane unkempt, his eyes cruel. Around him, the lionesses looked weary, their ribs showing beneath their fur.\n\nKito stepped forward, his voice strong. “Makalo! I have returned.”\n\nThe pride gasped. Makalo snarled, leaping down. “You? A weakling who ran away?”\n\n“I ran to survive,” Kito growled. “But now I fight for my home.”\n\nA battle erupted—claws flashed, roars shook the earth. Kito fought bravely, but Makalo was larger, fiercer. Just as Makalo lunged for the final blow, Tando and Binti distracted him, allowing Kito to knock his uncle off balance. With a mighty push, Makalo tumbled down the rocks, defeated.\n\nThe pride bowed before Kito, their true king. As he stood on Pride Rock at dawn, the land seemed to breathe again. Rain fell, quenching the thirsty earth, and the herds returned.\n\nKito had not just won a throne—he had restored the Circle of Life. And as his roar echoed across the savanna, the animals knew… the true Lion King had returned.",
+        "audio_file": null,
+        "rating": [],
+        "timestamp": "2025-08-09T22:28:05.622667"
     }
 ]
